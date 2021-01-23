@@ -13,7 +13,8 @@ execute_process(COMMAND python3 -c "import tensorflow.sysconfig as c; print(' '.
                 OUTPUT_VARIABLE TF_LINK_FLAGS)
 
 # set flags
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fPIC -O3 -Wl,--no-as-needed ${TF_COMPILE_FLAGS} ${TF_LINK_FLAGS}")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++14 -fPIC -O3 -Wl,--no-as-needed ${TF_COMPILE_FLAGS} ${TF_LINK_FLAGS}")
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -std=c++14")
 include_directories(${TF_INCLUDE_DIRS})
 
 # add library
