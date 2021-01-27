@@ -5,7 +5,8 @@ static const size_t THREAD_COUNT = 1024;
 
 template <typename T>
 __global__ void forwardKernel(const T* in, T* out, const size_t length) {
-    for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < length; i += blockDim.x * gridDim.x) {
+    const int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < length) {
 #if __CUDA_ARCH__ >= 350
         const T x = __ldg(in + i);
 #else
@@ -19,7 +20,8 @@ __global__ void forwardKernel(const T* in, T* out, const size_t length) {
 
 template <typename T>
 __global__ void backwardKernel(const T* in, const T* grad, T* out, const size_t length) {
-    for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < length; i += blockDim.x * gridDim.x) {
+    const int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < length) {
 #if __CUDA_ARCH__ >= 350
         const T x = fabsf(__ldg(in + i));
         const T g = __ldg(grad + i);
