@@ -7,7 +7,7 @@ from sigmoid_like import sigmoid_like
 def sigmoid_like_ref(x):
     from tensorflow.keras import backend as kb
     y = kb.clip(0.2*x, -0.2, 0.2)
-    return kb.clip(y + 0.1*x, -0.5, 0.5) + 0.5
+    return kb.clip(y + 0.05*x, -0.5, 0.5) + 0.5
 
 #  test
 x = 4 * tf.random.uniform((224, 224, 32))
