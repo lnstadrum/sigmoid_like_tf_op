@@ -12,8 +12,8 @@ __global__ void forwardKernel(const T* in, T* out, const size_t length) {
 #else
         const T x = in[i];
 #endif
-        const T y = 0.4f * __saturatef(0.5f * x + 0.5f) - 0.2f;
-        out[i] = __saturatef(y + 0.05f * x + 0.5f);
+        const T y = 0.4f * __saturatef(2.5f * (0.9f * x + 0.2f)) - 0.2f;
+        out[i] = __saturatef(y + 0.1f * x + 0.5f);
     }
 }
 
@@ -29,10 +29,10 @@ __global__ void backwardKernel(const T* in, const T* grad, T* out, const size_t 
         const T x = fabsf(in[i]);
         const T g = grad[i];
 #endif
-        if (x <= 1)
-            out[i] = 0.25f * g;
-        else if (x <= 6)
-            out[i] = 0.05f * g;
+        if (x <= 2.0f / 9.0f)
+            out[i] = g;
+        else if (x <= 3)
+            out[i] = 0.1f * g;
         else
             out[i] = 0;
     }
