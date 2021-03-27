@@ -6,11 +6,12 @@ from sigmoid_like import sigmoid_like
 # define reference operation
 def sigmoid_like_ref(x):
     from tensorflow.keras import backend as kb
-    y = kb.clip(0.9 * x, -0.2, 0.2)
-    return kb.clip(y + 0.1*x, -0.5, 0.5) + 0.5
+    y = kb.clip(0.1*x, -0.05, 0.05)
+    z = kb.clip(0.05*x, -0.125, 0.125)
+    return kb.clip(0.05*x + y + z, -0.5, 0.5) + 0.5
 
 #  test
-x = 4 * tf.random.uniform((224, 224, 32))
+x = 5 * tf.random.normal((224, 224, 32))
 with tf.GradientTape() as g:
     g.watch(x)
     y_test = sigmoid_like_ref(x)
@@ -30,8 +31,8 @@ print('Max backward pass error:', g_err)
 
 
 # plot
-if y_err > 1e-6:
-    x = numpy.linspace(-4, 4, 5000, dtype=numpy.float32)
+if y_err > 1e-6 or g_err > 1e-6:
+    x = numpy.linspace(-8, 8, 5000, dtype=numpy.float32)
     y_test = sigmoid_like(x)
     y_ref = sigmoid_like_ref(x)
     import matplotlib.pyplot as plt

@@ -1,5 +1,10 @@
 #include "sigmoid.h"
 
+
+#define CLIP(X, L) \
+    ((2.0f * (L)) * __saturatef((0.5f / (L)) * (X + (L))) - L)
+
+
 static const size_t THREAD_COUNT = 1024;
 
 
@@ -12,8 +17,9 @@ __global__ void forwardKernel(const T* in, T* out, const size_t length) {
 #else
         const T x = in[i];
 #endif
-        const T y = 0.4f * __saturatef(2.5f * (0.9f * x + 0.2f)) - 0.2f;
-        out[i] = __saturatef(y + 0.1f * x + 0.5f);
+        const T y = CLIP(0.1f * x, 0.05f);
+        const T z = CLIP(0.05f * x, 0.125f);
+        out[i] = __saturatef(0.05f * x + y + z + 0.5f);
     }
 }
 
@@ -29,10 +35,12 @@ __global__ void backwardKernel(const T* in, const T* grad, T* out, const size_t 
         const T x = fabsf(in[i]);
         const T g = grad[i];
 #endif
-        if (x <= 2.0f / 9.0f)
-            out[i] = g;
-        else if (x <= 3)
+        if (x <= 0.5f)
+            out[i] = 0.2f * g;
+        else if (x <= 2.5f)
             out[i] = 0.1f * g;
+        else if (x <= 6.5f)
+            out[i] = 0.05f * g;
         else
             out[i] = 0;
     }
